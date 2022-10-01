@@ -1,48 +1,1703 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+    <title>State Charts</title>
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/solarized.css">
+    <link rel="stylesheet" href="dist/app.css">
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2
-						<aside class="notes">
-						<p>Some notes</p>
-						</aside>
-						<p>Some slide text</p>
-						<aside class="notes">
-						<p>and some more notes</p>
-					</aside>
-				</section>
-			</div>
-		</div>
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/gruvbox-light-medium.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+        <section>
+          <h2>State Management Idea:</h2>
+          <h2>State Charts</h2>
+        </section>
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+        <section>
+          <section>
+            <h2>Current Problems</h2>
+          </section>
+
+          <section>
+            <h2>Reactivity</h2>
+            <div class="flex">
+              <div class="col">
+                <strong class="fragment">Vuex / Pinia</strong>
+              </div>
+              <div class="col">
+                <ul>
+                  <li class="fragment">Effective model</li>
+                  <li class="fragment">Flux Dev Tools</li>
+                  <li class="fragment red">Must be global</li>
+                </ul>
+              </div>
+            </div>
+            <hr class="fragment">
+            <div class="flex">
+              <div class="col">
+                <strong class="fragment">Composables</strong>
+              </div>
+              <div class="col">
+                <ul>
+                  <li class="fragment">On-demand</li>
+                  <li class="fragment">Can be non-global</li>
+                  <li class="fragment red">No Dev Tools</li>
+                </ul>
+              </div>
+            </div>
+            <p class="fragment red">Can we have an on-demand solution with tooling?</p>
+          </section>
+
+          <section>
+            <h2>Tooling</h2>
+            <div class="flex">
+              <div class="col">
+                <strong class="fragment">Flux Dev Tools</strong>
+              </div>
+              <div class="col">
+                <ul>
+                  <li class="fragment">Mutation logs</li>
+                  <li class="fragment">State snapshot after every mutation</li>
+                </ul>
+              </div>
+            </div>
+            <p class="fragment red">Shows details at low-level, but what about high-level?</p>
+          </section>
+
+          <section>
+            <h2>Behavioral Reasoning</h2>
+            <p class="fragment">When grokking a UI / feature, reading the implementation is often necessary.</p>
+            <p class="fragment red">Is there a way to grasp the behavior without diving into details?</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>State Charts</h2>
+        </section>
+
+        <section>
+          <h2>State Machines vs State Charts</h2>
+
+          <section>
+            <p class="fragment">State Machines are everywhere</p>
+            <p class="fragment">State Charts are...?</p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>State Machines</h2>
+            <p class="fragment">Finite States</p>
+            <p class="fragment">Initial State</p>
+            <p class="fragment">Transitions</p>
+          </section>
+
+          <section>
+            <h2>State Machines</h2>
+            <div class="font-0-7">
+              <pre class="r-stretch"><code class="ruby" data-trim data-line-numbers=1-22|2|3|4> 
+  class Order
+    state_machine :state, initial: :created do
+      event :confirm_payment do
+        transition created: :processing
+      end
+      event :pack do
+        transition processing: :ready
+      end
+      event :cancel do
+        transition %i[created processing ready] => :void
+      end
+      event :return do
+        transition delivered: :void
+      end
+      event :ship do
+        transition ready: :shipped
+      end
+      event :fail_delivery do
+        transition shipped: :processing
+      end
+    end
+  end
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h2>State Machines</h2>
+            <img class="r-stretch" src="images/fsm.png"></img>
+          </section>
+        </section>
+
+        <section>
+          <h2>State Charts</h2>
+
+          <section>
+            <p class="fragment">A <span class="red">visual language</span> used to describe the <span class="red">behavior</span> of reactive systems</p>
+            <p class="fragment">Used to specify an application's <span class="red">blueprint</span></p>
+            <p class="fragment">Composable state machines with <span class="red">extra features</span></p>
+          </section>
+
+          <section>
+            <p class=""><span class="red">Separate</span> behavior from implementation</p>
+            <p class="fragment"><span class="red">Document</span> behavior</p>
+            <p class="fragment"><span class="red">Visualize</span> behavior</p>
+          </section>
+
+          <section>
+            <p class="">Manageable <span class="red">behavior</span> = <span class="red">maintanable</span> application</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>Extra Features</h2>
+          <div class="flex">
+            <div class="fragment col">
+              <h3>State Machines</h3>
+              <div class="font-0-7">
+                <div>Finite States</div>
+                <div>Initial State</div>
+                <div>Transitions</div>
+              </div>
+            </div>
+            <div class="fragment col">
+              <h3>State Charts</h3>
+              <div class="font-0-7">
+                <div>Finite States</div>
+                <div>Initial State</div>
+                <div>Transitions</div>
+                <div>+</div>
+                <div>Final State</div>
+                <div>Compound States</div>
+                <div>Parallel States</div>
+                <div>Actions</div>
+                <div>Context</div>
+                <div>Guards</div>
+                <div>Services</div>
+                <div>Actors</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="simple-camera">
+          <h2>System: Simple Camera</h2>
+          <p class="fragment">Camera feature that processes a single shot only</p>
+          <p class="fragment">After capturing, you can apply transformations before saving</p>
+          <p class="fragment">After saving, app exits</p>
+        </section>
+
+        <section>
+          <section>
+            <h2>Finite States</h2>
+            <div><span class="red">Current</span> state out of set of <span class="red">finite</span> states</div>
+            <img class="r-stretch" src="images/sc_finite.png"></img>
+          </section>
+
+          <section>
+            <h2>Finite States</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="h-50" src="images/sc_finite.png"></img>
+              </div>
+              <div class="col-2 font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-9|5-8">
+import { createMachine } from 'xstate';
+
+const camera = createMachine({
+  id: 'camera',
+  states: {
+    running: {},
+    stopped: {},
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Initial State</h2>
+            <div><span class="red">Default</span> starting state</div>
+            <img class="r-stretch" src="images/sc_initial.png"></img>
+          </section>
+
+          <section>
+            <h2>Initial State</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="h-50" src="images/sc_initial.png"></img>
+              </div>
+              <div class="col-2 font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-10|5">
+import { createMachine } from 'xstate';
+
+const camera = createMachine({
+  id: 'camera',
+  initial: 'running',
+  states: {
+    running: {},
+    stopped: {},
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Transitions</h2>
+            <div><span class="red">Valid</span> moves from one state to another</div>
+            <img class="r-stretch" src="images/sc_transitions.png"></img>
+          </section>
+
+          <section>
+            <h2>Transitions</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="" src="images/sc_transitions.png"></img>
+              </div>
+              <div class="col-1-2 font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-18|7-11|12-16">
+import { createMachine } from 'xstate';
+
+const camera = createMachine({
+  id: 'camera',
+  initial: 'running',
+  states: {
+    running: {
+      on: {
+        SHUTDOWN: 'stopped'
+      }
+    },
+    stopped: {
+      on: {
+        STARTUP: 'running'
+      }
+    },
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Final State</h2>
+            <div>State that signals when a system is <span class="red">finished</span></div>
+            <img class="r-stretch" src="images/sc_final.png"></img>
+          </section>
+
+          <section>
+            <h2>Final State</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="" src="images/sc_final.png"></img>
+              </div>
+              <div class="col font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-27|23-25">
+import { createMachine } from 'xstate';
+
+const cameraRunning = createMachine({
+  id: 'cameraRunning',
+  initial: 'capturing',
+  states: {
+    capturing: {
+      on: {
+        CAPTURED: 'editing',
+      },
+    },
+    editing: {
+      on: {
+        EDITED: 'saving',
+        RETAKE: 'capturing',
+      }
+    },
+    saving: {
+      on: {
+        SAVED: 'done'
+      }
+    },
+    done: {
+      type: 'final'
+    },
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Compound State</h2>
+            <div>State with <span class="red">substates</span></div>
+            <img class="r-stretch" src="images/sc_compound.png"></img>
+          </section>
+
+          <section>
+            <h2>Compound State</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="" src="images/sc_compound.png"></img>
+              </div>
+              <div class="col font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-40|7,11-24">
+import { createMachine } from 'xstate';
+
+const cameraRunning = createMachine({
+  id: 'cameraRunning',
+  initial: 'capturing',
+  states: {
+    capturing: {
+      on: {
+        CAPTURED: 'editing',
+      },
+      initial: 'frontCamActive',
+      states: {
+        frontCamActive: {
+          on: {
+            USE_REAR: 'rearCamActive',
+          }
+        },
+        rearCamActive: {
+          on: {
+            USE_FRONT: 'frontCamActive',
+          }
+        },
+      }
+    },
+    editing: {
+      on: {
+        EDITED: 'saving',
+        RETAKE: 'capturing',
+      }
+    },
+    saving: {
+      on: {
+        SAVED: 'done'
+      }
+    },
+    done: {
+      type: 'final'
+    },
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Parallel States</h2>
+            <div>Compound States with <span class="red">independent regions</span></div>
+            <img class="r-stretch" src="images/sc_parallel.png"></img>
+          </section>
+
+          <section>
+            <h2>Parallel States</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="" src="images/sc_parallel.png"></img>
+              </div>
+              <div class="col-1-2 font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-60|7-9|10-24|25-39">
+import { createMachine } from 'xstate';
+
+const cameraRunning = createMachine({
+  id: 'cameraRunning',
+  initial: 'capturing',
+  states: {
+    capturing: {
+      type: 'parallel',
+      states: {
+        camera: {
+          initial: 'frontCamActive',
+          states: {
+            frontCamActive: {
+              on: {
+                USE_REAR: 'rearCamActive',
+              }
+            },
+            rearCamActive: {
+              on: {
+                USE_FRONT: 'frontCamActive',
+              }
+            },
+          }
+        },
+        flash: {
+          initial: 'withoutFlash',
+          states: {
+            withoutFlash: {
+              on: {
+                USE_FLASH: 'withFlash',
+              }
+            },
+            withFlash: {
+              on: {
+                DROP_FLASH: 'withoutFlash',
+              }
+            },
+          }
+        },
+      },
+      on: {
+        CAPTURED: 'editing',
+      },
+    },
+    editing: {
+      on: {
+        EDITED: 'saving',
+        RETAKE: 'capturing',
+      },
+    },
+    saving: {
+      on: {
+        SAVED: 'done'
+      }
+    },
+    done: {
+      type: 'final'
+    },
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Actions</h2>
+            <div>Run <span class="red">implementation</span> on <span class="red">transitions</span> and <span class="red">state changes</span></div>
+            <img class="r-stretch" src="images/sc_actions.png"></img>
+          </section>
+
+          <section>
+            <h2>Actions</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="" src="images/sc_actions.png"></img>
+              </div>
+              <div class="col-1-4 font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-75|15,17,23,25|51-53|69-74">
+import { createMachine } from 'xstate';
+
+const cameraRunning = createMachine({
+  id: 'cameraRunning',
+  initial: 'capturing',
+  states: {
+    capturing: {
+      type: 'parallel',
+      states: {
+        camera: {
+          initial: 'frontCamActive',
+          states: {
+            frontCamActive: {
+              on: {
+                USE_REAR: {
+                  target: 'rearCamActive',
+                  actions: ['requestRearCamera']
+                },
+              }
+            },
+            rearCamActive: {
+              on: {
+                USE_FRONT: {
+                  target: 'frontCamActive',
+                  actions: ['requestFrontCamera']
+                },
+              }
+            },
+          }
+        },
+        flash: {
+          initial: 'withoutFlash',
+          states: {
+            withoutFlash: {
+              on: {
+                USE_FLASH: 'withFlash',
+              }
+            },
+            withFlash: {
+              on: {
+                DROP_FLASH: 'withoutFlash',
+              }
+            },
+          }
+        },
+      }
+      on: {
+        CAPTURED: 'editing',
+      },
+    },
+    editing: {
+      entry: ['setupEditingPanel'],
+      exit: ['cleanupEditingPanel'],
+      on: {
+        EDITED: 'saving',
+        RETAKE: 'capturing',
+      },
+    },
+    saving: {
+      on: {
+        SAVED: 'done'
+      }
+    },
+    done: {
+      type: 'final'
+    },
+  }
+}, {
+  actions: {
+    requestRearCamera: (context, event) => {},
+    requestFrontCamera: (context, event) => {},
+    setupEditingPanel: (context, event) => {},
+    cleanupEditingPanel: (context, event) => {},
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Context</h2>
+            <div><span class="red">Infinite</span> state shared across all finite states</div>
+            <img class="r-stretch" src="images/sc_context.png"></img>
+          </section>
+
+          <section>
+            <h2>Context</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="" src="images/sc_context.png"></img>
+              </div>
+              <div class="col-2 font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-41|6-8|10,12,14|35-37">
+import { createMachine, assign } from 'xstate';
+
+const cameraRunning = createMachine({
+  id: 'cameraRunning',
+  initial: 'capturing',
+  context: {
+    capturedImage: null
+  },
+  states: {
+    capturing: {
+      on: {
+        CAPTURED: {
+          target: 'editing',
+          actions: ['cacheCapturedImage'],
+        }
+      },
+    },
+    editing: {
+      on: {
+        EDITED: 'saving',
+        RETAKE: 'capturing',
+      }
+    },
+    saving: {
+      on: {
+        SAVED: 'done'
+      }
+    },
+    done: {
+      type: 'final'
+    },
+  }
+}, {
+  actions: {
+    cacheCapturedImaged: assign({
+      capturedImage: (context, event) => event.data
+    }),
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+
+        <section>
+          <section>
+            <h2>Guards</h2>
+            <div>Control transition <span class="red">conditions</span></div>
+            <img class="r-stretch" src="images/sc_guards.png"></img>
+          </section>
+
+          <section>
+            <h2>Guards</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="" src="images/sc_guards.png"></img>
+              </div>
+              <div class="col-2 font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-75|5-7|11-23|13,24-31|33-40|41-48|53-60|61-68">
+import { createMachine, assign } from 'xstate';
+
+const capturing = createMachine({
+  id: 'capturing',
+  context: {
+    zoomLevel: 50,
+  },
+  type: 'parallel',
+  states: {
+    zoom: {
+      initial: 'normal',
+      states: {
+        normal: {
+          always: [
+            { 
+              target: 'maximum', 
+              cond: 'cannotIncreaseZoom' 
+            },
+            { 
+              target: 'minimum', 
+              cond: 'cannotDecreaseZoom' 
+            },
+          ],
+          on: {
+            INCREASE_ZOOM: {
+              actions: ['increaseZoom']
+            },
+            DECREASE_ZOOM: {
+              actions: ['decreaseZoom']
+            },
+          },
+        },
+        minimum: {
+          on: {
+            INCREASE_ZOOM: {
+              target: 'normal',
+              actions: ['increaseZoom']
+            },
+          },
+        },
+        maximum: {
+          on: {
+            DECREASE_ZOOM: {
+              target: 'normal',
+              actions: ['decreaseZoom']
+            },
+          },
+        },
+      },
+    },
+  }
+}, {
+  actions: {
+    increaseZoom: assign({
+      zoomLevel: (context, event) => context.zoomLevel + 10;
+    }),
+    decreaseZoom: assign({
+      zoomLevel: (context, event) => context.zoomLevel - 10;
+    }),
+  },
+  guards: {
+    cannotIncreaseZoom: (context, event) => {
+      return context.zoomLevel >= 100;
+    },
+    cannotDecreaseZoom: (context, event) => {
+      return context.zoomLevel <= 0
+    }
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Services</h2>
+            <div>Model <span class="red">states</span> as machines</div>
+            <img class="" src="images/sc_services.png"></img>
+          </section>
+
+          <section>
+            <h2>Services</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="" src="images/sc_services.png"></img>
+              </div>
+              <div class="col-1-4 font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="1-55|6-8|21-34|47-54">
+import { createMachine, assign } from 'xstate';
+
+const cameraRunning = createMachine({
+  id: 'cameraRunning',
+  initial: 'capturing',
+  context: {
+    image: null,
+  },
+  states: {
+    capturing: {
+      on: {
+        CAPTURED: 'editing',
+      },
+    },
+    editing: {
+      on: {
+        EDITED: 'saving',
+        RETAKE: 'capturing',
+      }
+    },
+    saving: {
+      invoke: {
+        id: 'saving',
+        src: 'saveImage',
+        onDone: { 
+          target: 'done',
+          actions: ['logSuccess'],
+        },
+        onError: { 
+          target: 'error',
+          actions: ['logFailure'],
+        },
+      }
+    },
+    done: {
+      type: 'final'
+    },
+    error: {
+      type: 'final'
+    }
+  }
+}, {
+  actions: {
+    logSuccess: () => this.log('pass'),
+    logFailure: () => this.log('fail'),
+  },
+  services: {
+    saveImage: (context, event) => fetch(
+      'http://example.com', {
+        method: 'POST',
+        body: JSON.stringify(context.image)
+      }
+    ),
+  }
+});
+                </code></pre>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Actors</h2>
+            <div>Store <span class="red">unlimited</span> machines in context</div>
+            <img class="r-stretch" src="images/sc_actors_1.png"></img>
+            <img class="r-stretch" src="images/sc_actors_2.png"></img>
+          </section>
+
+          <section>
+            <h2>Actors</h2>
+            <div class="font-0-7">
+              <pre ><code class="h-25 js " data-trim data-line-numbers="1-28|9-15|24-26|9-15">
+import { createMachine, assign, spawn, sendParent } from 'xstate';
+
+const camera = createMachine({
+  id: 'camera',
+  initial: 'running',
+  context: {
+    cameraRunning: null,
+  },
+  states: {
+    running: {
+      entry: ['spawnCameraRunning'],
+      on: {
+        'CAMERA_RUNNING.DONE': 'stopped'
+      }
+    },
+    stopped: {
+      on: {
+        STARTUP: 'running'
+      }
+    },
+  }
+}, {
+  actions: {
+    spawnCameraRunning: assign({
+      cameraRunning: () => spawn(cameraRunning)
+    })
+  }
+});
+              </code></pre>
+            </div>
+            <div class="font-0-7">
+              <pre><code class="h-25 js" data-trim data-line-numbers="1-37|21-27|34-36">
+import { createMachine, assign, spawn, sendParent } from 'xstate';
+
+const cameraRunning = createMachine({
+  id: 'cameraRunning',
+  initial: 'capturing',
+  context: {
+    image: null,
+  },
+  states: {
+    capturing: {
+      on: {
+        CAPTURED: 'editing',
+      },
+    },
+    editing: {
+      on: {
+        EDITED: 'saving',
+        RETAKE: 'capturing',
+      }
+    },
+    saving: {
+      on: {
+        SAVED: {
+          target: 'done',
+          actions: ['emitDone'],
+        }
+      }
+    },
+    done: {
+      type: 'final'
+    },
+  }
+}, {
+  actions: {
+    emitDone: sendParent('CAMERA_RUNNING.DONE')
+  }
+});
+              </code></pre>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>How to Use?</h2>
+          </section>
+
+          <section>
+            <h2>XState</h2>
+            <p>State Chart library</p>
+            <iframe class="r-stretch" data-src="https://xstate.js.org/docs/"></iframe>
+          </section>
+
+          <section>
+            <h2>XState</h2>
+            <p>Compliant to SCXML (W3C Standard)</p>
+            <iframe class="r-stretch" data-src="https://www.w3.org/TR/scxml/"></iframe>
+          </section>
+
+          <section>
+            <h2>XState</h2>
+            <p>Has a Live Inspector / Visualizer</p>
+            <iframe class="r-stretch" data-src="https://stately.ai/viz"></iframe>
+          </section>
+
+          <section>
+            <h2>XState</h2>
+            <p>Has libraries for known frameworks (Vue, etc)</p>
+            <iframe class="r-stretch" data-src="https://xstate.js.org/docs/packages/xstate-vue/"></iframe>
+          </section>
+
+          <section>
+            <h2>XState</h2>
+            <p>Working on an editor (for non-dev users)</p>
+            <iframe class="r-stretch" data-src="https://stately.ai/"></iframe>
+          </section>
+        </section>
+
+        <section id="how-to-model">
+          <h2>How to Model?</h2>
+          <a class="fragment" href="#/simple-camera">See config examples</a>
+        </section>
+
+        <section>
+          <section>
+            <h2>How to Consume?</h2>
+            <ol>
+              <li class="fragment">Locate The Configuration</li>
+              <li class="fragment">Plug the Implementation</li>
+              <li class="fragment">Consume in UI</li>
+              <li class="fragment">Observe in Live Inspector</li>
+            </ol>
+          </section>
+
+          <section>
+            <h2>How to Consume?</h2>
+            <div class="font-0-7">
+              <pre><code class="js" data-trim data-line-numbers="1-89|26-64|74-82|83-86|2,3,8,12,13,16,17,18">
+<template>
+  <template v-if="state.value === 'idle'">
+    <button @click="send({ type: 'FETCH', query: 'something' })">
+      Search for something
+    </button>
+  </template>
+
+  <template v-else-if="state.value === 'loading'">
+    <div>Searching...</div>
+  </template>
+
+  <template v-else-if="state.value === 'success'">
+    <div>Success! {{ state.context.data }}</div>
+  </template>
+
+  <template v-else-if="state.value === 'failure'">
+    <p>{{ state.context.error.message }}</p>
+    <button @click="send('RETRY')">Retry</button>
+  </template>
+</template>
+
+<script>
+  import { assign, createMachine } from 'xstate';
+  import { useMachine } from '@xstate/vue';
+
+  const fetchMachine = createMachine({
+    id: 'fetch',
+    initial: 'idle',
+    context: {
+      data: undefined,
+      error: undefined
+    },
+    states: {
+      idle: {
+        on: { FETCH: 'loading' }
+      },
+      loading: {
+        invoke: {
+          src: 'fetchData',
+          onDone: {
+            target: 'success',
+            actions: assign({
+              data: (_context, event) => event.data
+            })
+          },
+          onError: {
+            target: 'failure',
+            actions: assign({
+              error: (_context, event) => event.data
+            })
+          }
+        }
+      },
+      success: {
+        entry: 'notifySuccess',
+        type: 'final'
+      },
+      failure: {
+        on: {
+          RETRY: 'loading'
+        }
+      }
+    }
+  });
+
+  export default {
+    props: {
+      onResolve: {
+        type: Function,
+        default: () => {}
+      }
+    },
+    setup(props) {
+      const { state, send } = useMachine(fetchMachine, {
+        actions: {
+          notifySuccess: (ctx) => props.onResolve(ctx.data)
+        },
+        services: {
+          fetchData: (_context, event) =>
+          fetch(`some/api/${event.query}`).then((res) => res.json())
+        }
+      });
+      return {
+        state,
+        send
+      };
+    }
+  };
+</script>
+              </code></pre>
+            </div>
+            <a class="" href="https://stately.ai/viz" target="_blank">XState Visualizer</a>
+          </section>
+        </section>
+
+        <section>
+          <h2>Validity in Dialer Video</h2>
+        </section>
+
+        <section>
+          <section>
+            <h2>Waiting Room View State</h2>
+            <div class="flex">
+              <div class="col">
+                <video loop muted data-autoplay src="videos/sc_waiting_room_view_state_ui.mp4"></video>
+              </div>
+              <div class="col">
+                <img class="" src="images/sc_waiting_room_view_state.png"></img>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>Waiting Room View State</h2>
+            <div class="flex">
+              <div class="col">
+                <img class="" src="images/sc_waiting_room_view_state.png"></img>
+              </div>
+              <div class="col-1-4 font-0-7">
+                <pre><code class="js" data-trim data-line-numbers>
+import { createMachine, assign } from 'xstate';
+
+const waitingRoomViewState = createMachine({
+  id: 'waitingRoomViewState',
+  initial: 'waiting',
+  states: {
+    waiting: {
+      initial: 'plain',
+      states: {
+        plain: {
+          on: {
+            SHOW_CONTENT: {
+              target: 'showingContent'
+            }
+          }
+        },
+        showingContent: {
+          on:  {
+            DISMISS_CONTENT: {
+              target: 'plain'
+            }
+          }
+        },
+      },
+      on: {
+        START_VIDEO_POP_OUT: {
+          target: 'videoPopOutOngoing'
+        }
+      }
+    },
+    videoPopOutOngoing: {
+      on: {
+        STOP_VIDEO_POP_OUT: {
+          target: 'waiting'
+        }
+      }
+    }
+  }
+})
+                </code></pre>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>Waiting Room View State, Before</h2>
+            <div class="font-0-7">
+              <pre><code class="js" data-trim data-line-numbers="1-119|3,5,6,7,8,11,17,23">
+<template>
+  <div
+    class="video-room-waiting"
+    :class="{
+      'state-is-video-room-waiting-pip-active': popOutPlaceholderActive,
+    }"
+  >
+    <DialerSendEmailInvite v-if="showEmailInviteFeature" />
+    <img
+      v-if="!popOutPlaceholderActive && !showEmailInviteFeature"
+      alt=""
+      :src="hostProfilePhoto"
+      class="video-room-waiting-profile-photo"
+    />
+    <img
+      v-else-if="!popOutPlaceholderActive && !showEmailInviteFeature"
+      alt=""
+      :src="emptyStateWaiting"
+      class="video-room-waiting-empty-state"
+    />
+    <p
+      v-if="!popOutPlaceholderActive && !showEmailInviteFeature"
+      class="video-room-waiting-message"
+      role="heading"
+      aria-level="1"
+    >
+      Waiting for others...
+    </p>
+    <DialerTip
+      v-if="callNudgeEnabled"
+      :visible="showCallNudgeTooltip"
+      ignorable=".video-controls"
+      resizable=".dialer-video-content"
+      content="video-room-call-nudge-tooltip"
+    >
+      <DialerVideoCallNudge />
+      <template #tip>
+        Patient not joining? Give them a call to see if they’re still available.
+      </template>
+    </DialerTip>
+    <dox-track
+      v-if="placeholderPopOutSupported && !popOutPlaceholderActive"
+      event="video_room_pop_out"
+      :tapped="true"
+      :payload="{ video_call_uuid: callUuid }"
+    >
+      <button
+        class="dialer-video-pop-out-cta-button dialer-button"
+        @click="startPopOut()"
+      >
+        <VideoTrackPopOutIcon
+          class="dialer-video-pop-out-cta-btn-icon svg-icon"
+        />
+        Pop Out Patient Video
+      </button>
+    </dox-track>
+    <DialerVideoTrackPopOutPlaceholder
+      v-if="popOutPlaceholderActive"
+      class="video-waiting-trackout-pop-out-placeholder"
+    >
+      <dox-track
+        event="video_room_pop_out_cancel"
+        :shown="true"
+        :payload="{ video_call_uuid: callUuid }"
+      >
+        <button class="dialer-button blue solid" @click="endPopOut()">
+          Cancel
+        </button>
+      </dox-track>
+    </DialerVideoTrackPopOutPlaceholder>
+  </div>
+</template>
+
+<script>
+import { computed, useStore } from '@nuxtjs/composition-api';
+import DialerVideoCallNudge from './DialerVideoCallNudge';
+import DialerVideoTrackPopOutPlaceholder from './DialerVideoTrackPopOutPlaceholder';
+import DialerSendEmailInvite from './DialerSendEmailInvite';
+import { mapState } from '~/store/clinicianVideo/namespacedHelpers';
+import DoxTrack from '~shared/lib/DoxTrack';
+import useVideoPopOut from '~shared/composables/useVideoPopOut';
+import useVideoContext from '~shared/composables/useVideoContext';
+
+import DialerTip from '~shared/components/DialerTip';
+import EmptyStateWaiting from '~shared/assets/images/defaults/empty-state-waiting-room-dark.svg?data';
+import VideoTrackPopOutIcon from '~shared/assets/images/video/icon-pop-out.svg?inline';
+
+const THIRTY_SECONDS = 30 * 1000;
+
+export default {
+  name: 'DialerVideoRoomWaiting',
+  components: {
+    DoxTrack,
+    DialerTip,
+    DialerVideoCallNudge,
+    VideoTrackPopOutIcon,
+    DialerVideoTrackPopOutPlaceholder,
+    DialerSendEmailInvite,
+  },
+  setup() {
+    const store = useStore();
+    const { isConnecting } = useVideoContext();
+    const callUuid = computed(() => store.state.clinicianVideo.callUuid);
+    const showEmailInviteFeature = computed(
+      () =>
+        // email invitations are only surfaced for "numberless" video calls
+        // that were created without an initial SMS patient invite.
+        showWaitingScreen.value &&
+        !store.state.clinicianVideo.patientPhoneNumber,
+    );
+    const showWaitingScreen = computed(
+      () =>
+        !store.getters['clinicianVideo/hasVideoParticipants'] &&
+        !isConnecting.value,
+    );
+    const {
+      placeholderPopOutSupported,
+      popOutPlaceholderActive,
+      startPopOut,
+      endPopOut,
+    } = useVideoPopOut();
+    return {
+      placeholderPopOutSupported,
+      popOutPlaceholderActive,
+      startPopOut,
+      endPopOut,
+      showEmailInviteFeature,
+      showWaitingScreen,
+      callUuid,
+    };
+  },
+  data() {
+    return {
+      emptyStateWaiting: EmptyStateWaiting,
+      showCallNudgeTooltip: false,
+    };
+  },
+  computed: {
+    ...mapState(['callName', 'patientPhoneNumber', 'hasVideoParticipants']),
+    callNudgeEnabled() {
+      // If this is an ad-hoc video call for which there is no known
+      // patient, we lack a phone number that can be used for the nudge.
+      // In a future iteration, we will be updating our Call Nudge feature
+      // to support arbitrary number input:
+      // https://www.pivotaltracker.com/story/show/176622103
+      return this.patientPhoneNumber;
+    },
+  },
+  mounted() {
+    this.nudgeTipTimeout = setTimeout(() => {
+      if (!this.hasVideoParticipants) {
+        this.showCallNudgeTooltip = true;
+      }
+    }, THIRTY_SECONDS);
+  },
+  destroyed() {
+    clearTimeout(this.nudgeTipTimeout);
+  },
+};
+</script>
+              </code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h2>Waiting Room View State, After</h2>
+            <div class="font-0-7">
+              <pre class=""><code class="js" data-trim data-line-numbers="1-125|4,5,11,16,18,21,24,25,32|6,8,19,22,25">
+<template>
+  <Provider
+    :context-key="waitingViewStateContextKey"
+    :context-value="waitingViewStateContextValue"
+  >
+    <div class="dialer-video-room-waiting">
+      <div
+        v-if="isViewStateWaiting"
+        class="dialer-video-room-waiting-central-area"
+      >
+        <template v-if="isViewStateWaitingPlain">
+          <Profile v-show="!isFeatureSendEmailInviteEnabled" />
+        </template>
+        <template v-if="isFeatureWaitingRoomContentEnabled">
+          <Provider
+            :context-key="waitingContentContextKey"
+            :context-value="waitingContentContextValue"
+          >
+            <!-- Render, but keep hidden, to load the assets ahead of time -->
+            <content v-show="isViewStateWaitingShowingContent" />
+          </Provider>
+        </template>
+      </div>
+      <div
+        class="dialer-video-room-waiting-flexible-features"
+        :class="{
+          'view-state-waiting-showing-content': isViewStateWaitingShowingContent,
+        }"
+        data-test-dialer-video-room-waiting-flexible-features
+      >
+        <portal
+          to="dialer-video-room-waiting-call-nudge"
+          :disabled="!isViewStatePreVideoPopOutOngoing"
+        >
+          <CallNudgeWithTip
+            v-if="isFeatureCallNudgeEnabled"
+            class="dialer-video-room-waiting-call-nudge"
+          />
+        </portal>
+        <portal
+          to="dialer-video-room-waiting-send-email-invite"
+          :disabled="!isViewStatePreVideoPopOutOngoing"
+        >
+          <SendEmailInvite
+            v-if="isFeatureSendEmailInviteEnabled"
+            class="dialer-video-room-waiting-send-email-invite"
+          />
+        </portal>
+        <portal
+          to="dialer-video-room-waiting-pre-video-pop-out-button"
+          :disabled="!isViewStateCentralAreaBusy"
+        >
+          <template v-if="isViewStateWaiting && isFeaturePreVideoPopOutEnabled">
+            <Provider
+              :key="'waitingPreVideoPopOutButton'"
+              :context-key="waitingPreVideoPopOutContextKey"
+              :context-value="waitingPreVideoPopOutContextValue"
+            >
+              <PreVideoPopOutButton
+                class="dialer-video-room-waiting-pre-video-pop-out-button"
+              />
+            </Provider>
+          </template>
+        </portal>
+      </div>
+      <div
+        v-if="isViewStatePreVideoPopOutOngoing"
+        class="state-is-dialer-video-room-waiting-pip-active"
+      >
+        <Provider
+          :key="'waitingPreVideoPopOutPlaceholder'"
+          :context-key="waitingPreVideoPopOutContextKey"
+          :context-value="waitingPreVideoPopOutContextValue"
+        >
+          <PreVideoPopOutPlaceholder />
+        </Provider>
+      </div>
+      <div class="dialer-video-room-waiting-flexible-features-teleported">
+        <portal-target name="dialer-video-room-waiting-call-nudge" />
+        <portal-target name="dialer-video-room-waiting-send-email-invite" />
+        <portal-target
+          name="dialer-video-room-waiting-pre-video-pop-out-button"
+        />
+      </div>
+    </div>
+  </Provider>
+</template>
+
+<script>
+  import Profile from "./WaitingRoom/Profile";
+  import Content from "./WaitingRoom/Content";
+  import CallNudgeWithTip from "./WaitingRoom/CallNudgeWithTip";
+  import PreVideoPopOutButton from "./WaitingRoom/PreVideoPopOutButton";
+  import PreVideoPopOutPlaceholder from "./WaitingRoom/PreVideoPopOutPlaceholder";
+  import SendEmailInvite from "./WaitingRoom/SendEmailInvite";
+  import useVideoContext from "~shared/composables/useVideoContext";
+  import useWaitingRoomContentTracking from "~clinician-video/composables/useWaitingRoom/useContent/useTracking";
+  import Provider from "~shared/components/Provider";
+
+  import useWaitingRoom from "~clinician-video/composables/useWaitingRoom";
+  import logger from "~shared/lib/Logger";
+
+  // See Provider component on why these cannot be Symbols, temporarily
+  export const WAITING_VIEW_STATE_CONTEXT_KEY = "WaitingViewStateContextKey";
+  export const WAITING_CONTENT_CONTEXT_KEY = "WaitingContentContextKey";
+  export const WAITING_PRE_VIDEO_POP_OUT_CONTEXT_KEY =
+    "WaitingPreVideoPopOutContextKey";
+
+  export default {
+    name: "DialerVideoRoomWaiting",
+    components: {
+      Profile,
+      Content,
+      CallNudgeWithTip,
+      PreVideoPopOutButton,
+      PreVideoPopOutPlaceholder,
+      SendEmailInvite,
+      Provider,
+    },
+    setup() {
+      const videoContext = useVideoContext();
+
+      // Get content tracking context from "satellite tracker"
+      const contentTrackingContext = useWaitingRoomContentTracking();
+
+      const {
+        isViewStateWaiting,
+        isViewStateWaitingPlain,
+        isViewStateWaitingShowingContent,
+        isViewStatePreVideoPopOutOngoing,
+        isViewStateCentralAreaBusy,
+        isFeaturePreVideoPopOutEnabled,
+        isFeatureCallNudgeEnabled,
+        isFeatureSendEmailInviteEnabled,
+        isFeatureWaitingRoomContentEnabled,
+        waitingViewStateContextValue,
+        waitingPreVideoPopOutContextValue,
+        waitingContentContextValue,
+      } = useWaitingRoom({
+        actions: {
+          onError: (message, error) => {
+            logger.error(message, error);
+          },
+        },
+        videoContext,
+        contentTrackingContext,
+      });
+
+      return {
+        isViewStateWaiting,
+        isViewStateWaitingPlain,
+        isViewStateWaitingShowingContent,
+        isViewStatePreVideoPopOutOngoing,
+        isViewStateCentralAreaBusy,
+        isFeaturePreVideoPopOutEnabled,
+        isFeatureCallNudgeEnabled,
+        isFeatureSendEmailInviteEnabled,
+        isFeatureWaitingRoomContentEnabled,
+        waitingViewStateContextValue,
+        waitingPreVideoPopOutContextValue,
+        waitingContentContextValue,
+        waitingViewStateContextKey: WAITING_VIEW_STATE_CONTEXT_KEY,
+        waitingPreVideoPopOutContextKey: WAITING_PRE_VIDEO_POP_OUT_CONTEXT_KEY,
+        waitingContentContextKey: WAITING_CONTENT_CONTEXT_KEY,
+      };
+    },
+  };
+</script>
+
+              </code></pre>
+            </div>
+          </section>
+
+        </section>
+
+        <section>
+          <section>
+            <h2>Waiting Room Content</h2>
+            <img class="r-stretch" src="images/sc_waiting_room_content.png"></img>
+          </section>
+
+          <section>
+            <h2>Waiting Room Content</h2>
+            <div class="font-0-7">
+              <!-- |9,11-14|77-79|15-19|59-61|22-25|80-83|26-30|62-64|33-39|72-75|40-47|65-70|48-50|52-56 -->
+              <pre><code class="js" data-trim data-line-numbers="1-85">
+import { createMachine, assign } from 'xstate';
+
+const waitingRoomContent = createMachine({
+  id: 'waitingRoomContent',
+  context: {
+    content: null,
+    waitingDuration: null,
+  },
+  initial: 'gettingContent',
+  states: {
+    gettingContent: {
+      invoke: {
+        id: 'getContent',
+        src: 'getContent',
+        onDone: {
+          target: 'gettingWaitingDuration',
+          actions: ['setContent'],
+        },
+        onError: 'stopped'
+      }
+    },
+    gettingWaitingDuration: {
+      invoke: {
+        id: 'getWaitingDuration',
+        src: 'getWaitingDuration',
+        onDone: {
+          target: 'waiting',
+          actions: ['setWaitingDuration'],
+        },
+        onError: 'stopped'
+      }
+    },
+    waiting: {
+      after: {
+        WAITING_DURATION_DELAY: {
+          target: 'showingContent'
+        }
+      }
+    },
+    showingContent: {
+      on: {
+        DISMISS_CONTENT: {
+          target: 'stopped',
+          actions: ['trackDismissWhileShowingContent'],
+        }
+      }
+    },
+    stopped: {
+      type: 'final',
+    }
+  },
+  on: {
+    DISMISS_CONTENT: {
+      target: 'stopped'
+    }
+  }
+}, {
+  actions: {
+    setContent: assign({
+      content: (context, event) => event.data,
+    }), 
+    setWaitingDuration: assign({
+      waitingDuration: (context, event) => event.data,
+    }),
+    trackDismissWhileShowingContent: (context, event) => 
+      {
+        // replace during machine invocation, or
+        // send an event to parent, or
+        // send an event to any machine ID
+      },
+  },
+  delays: {
+    WAITING_DURATION_DELAY: (context, event) => 
+      context.waitingDuration,
+  },
+  services: {
+    getContent: () => Promise.resolve(
+      { uuid: 1, waiting_duration: 5000 }
+    ),
+    getWaitingDuration: (context, event) => 
+      Promise.resolve(
+        context.content.waiting_duration
+      ),
+  }
+})
+              </code></pre>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section data-markdown>
+            <textarea data-template>
+              ## Diagnostics Test
+              doximity/dialer-web PR #499
+
+              [Interest Check: State Charts as the Engine of Application State](https://xstate.js.org/)
+            </textarea>
+          </section>
+
+          <section>
+            <h2>Diagnostics Test, Before</h2>
+            <div class="flex">
+              <div class="col font-0-7">
+                <pre><code class="js" data-trim data-line-numbers="5-14">
+  📁 composables/
+   📁 useDiagnosticsContext/
+   📁 useDiagnosticsTest/
+    📁 useDiagnosticsResults/
+    📄 index.js
+    📄 useAudioTest.js
+    📄 useBitrateTest.js
+    📄 useDiagnosticsPanels.js
+    📄 usePreflightTestToken.js
+    📄 useSendDiagnosticsReport.js
+    📄 useTwilioStatus.js
+    📄 useVideoInputTest.js
+    📄 useVideoPreflightTest.js
+    📄 useVoicePreflightTest.js
+                </code></pre>
+              </div>
+              <div class="col">
+                <p>10 files</p>
+                <p>1,560 lines</p>
+                <p><span class="red">Mixed</span> behavior and implementation</p>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>Diagnostics Test, After</h2>
+            <div class="flex">
+              <div class="col font-0-7">
+                <pre><code class="r-stretch js" data-trim data-line-numbers="3-22">
+📁 machines/
+ 📁 diagnostics/
+  📁 machines/
+   📄 backgroundTestsMachine.js
+   📄 bitrateTestMachine.js
+   📄 connectivityTestMachine.js
+   📄 deviceTestsMachine.js
+   📄 diagnosticsMachine.js
+   📄 preflightTestsMachine.js
+   📄 testsMachine.js
+  📁 services/
+   📄 getBitrateTestDeps.js
+   📄 getBitrateTestToken.js
+   📄 getIsNativeWebView.js
+   📄 getPreflightTestToken.js
+   📄 getVideoPreflightTestDeps.js
+   📄 getVoicePreflightTestDeps.js
+   📄 requestDevicePermissions.js
+   📄 runBitrateTest.js
+   📄 runConnectivityTest.js
+   📄 runVideoPreflightTest.js
+   📄 runVoicePreflightTest.js
+                </code></pre>
+              </div>
+              <div class="col">
+                <div>7 files</div>
+                <div>1,206 lines</div>
+                <div><span class="red">Pure</span> behavior</div>
+                <br>
+                <div>11 files</div>
+                <div>286 lines</div>
+                <div><span class="red">Pure</span> implementation</div>
+              </div>
+            </div>
+          </section>
+
+        </section>
+
+        <section>
+          <section>
+            <h2>Tradeoffs</h2>
+          </section>
+
+          <section>
+            <h2>Benefits</h2>
+            <p class="fragment">Behavior becomes a <span class="red">documented, visual artifact</span></p>
+            <p class="fragment">The state chart process <span class="red">forces all states to be explored</span></p>
+            <p class="fragment">Can be used <span class="red">within</span> larger state patterns</p>
+            <p class="fragment">Can be used <span class="red">incrementally</span></p>
+            <p class="fragment">More boilerplate = <span class="red">less custom code</span> to maintain</p>
+            <p class="fragment"><span class="red">Common language</span> between Product / Design / Dev</p>
+          </section>
+
+          <section>
+            <h2>Counters</h2>
+            <p class="fragment">Needs <span class="red">developer education</span> on state chart concepts</p>
+            <p class="fragment">A different way of thinking: <span class="red">less code, more design</span></p>
+            <p class="fragment"><span class="red">Not the initial approach</span> any normal person goes for</p>
+          </section>
+
+        </section>
+
+        <section data-markdown>
+          <textarea data-template>
+            ## Resources
+            [XState](https://xstate.js.org/)
+
+            [statecharts.dev](https://statecharts.dev/)
+
+            [State Machines in Ruby: An Introduction](https://blog.appsignal.com/2022/06/22/state-machines-in-ruby-an-introduction.html)
+          </textarea>
+        </section>
+
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealZoom, RevealMarkdown, RevealHighlight, RevealNotes ]
+      });
+    </script>
+  </body>
 </html>

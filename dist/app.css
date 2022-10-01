@@ -1,0 +1,42 @@
+.flex {
+	display: flex;
+}
+.col {
+	flex: 1;
+}
+.col-1-2 {
+	flex: 1.2;
+}
+.col-1-4 {
+	flex: 1.4;
+}
+.col-2 {
+	flex: 2;
+}
+
+.font-0-5 {
+	font-size: 0.5em;
+}
+.font-0-6 {
+	font-size: 0.6em;
+}
+.font-0-7 {
+	font-size: 0.7em;
+}
+.font-0-8 {
+	font-size: 0.8em;
+}
+.font-0-9 {
+	font-size: 0.9em;
+}
+
+.red {
+	color: #cc241d;
+}
+
+.h-50 {
+	height: 50vh;
+}
+.h-25 {
+	height: 30vh;
+}
